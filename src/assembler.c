@@ -133,6 +133,7 @@ int main(int argc, char* argv[]) {
   FILE   *output,
          *input;
   char   *line;
+  char  cmd;
   
   /* Open streams, *should* use UNIX flag style parsing */
   if (argc < 3) error("Too Few Arguments\nUsage: ./dvm source.asm outfile.o");
@@ -143,7 +144,6 @@ int main(int argc, char* argv[]) {
     error("File Error");
 
   /* Main logic */
-  char  cmd;
   while ((line = fgetline(input, '\n', MAX_LEN)) != NULL) {
     /* Check for EOF/Errors */
     if (line == NULL) break;

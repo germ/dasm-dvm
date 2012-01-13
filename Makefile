@@ -1,5 +1,5 @@
 CC		 = gcc
-FLAGS  = -g
+FLAGS  = -g -ansi
 SRC		= src
 
 all: vm assembler

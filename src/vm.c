@@ -82,7 +82,7 @@ int      main(int argc, char* argv[]) {
   for (i = 0; (i < 16) && ((c = fgetc(input)) != EOF); i++) 
     mem[i] = c;
 
-  //Run the program
+  /* Run the program */
   while (state == RUNNING) {
     ir = mem[ip];
     switch(get_inst(ir)) {
