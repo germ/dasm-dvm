@@ -20,8 +20,8 @@
     sub:      Subtract the third register from the second register and store
               the value in the first register
     halt:     Terminate the program
-    
-    , store, value, jump, jump0, add, sub, halt
+    data:     Set the byte to value
+    nop:      Empty instruction
 
 -=- Command syntax -=-
   load    register, location

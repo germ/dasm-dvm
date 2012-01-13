@@ -15,14 +15,16 @@ char     parse_line(char** string) {
   tok    = strtok(line, " ,");
 
   /* Find current instruction */
-  if (strcmp(tok, "load")  == 0) sv = LOAD;
-  if (strcmp(tok, "store") == 0) sv = STOR;
-  if (strcmp(tok, "value") == 0) sv = VAL;
-  if (strcmp(tok, "jump")  == 0) sv = JMP;
-  if (strcmp(tok, "jump0") == 0) sv = JMP0;
-  if (strcmp(tok, "add")   == 0) sv = ADD;
-  if (strcmp(tok, "sub")   == 0) sv = SUB;
-  if (strcmp(tok, "halt")  == 0) sv = HALT;
+  if      (strcmp(tok, "load")  == 0) sv = LOAD;
+  else if (strcmp(tok, "store") == 0) sv = STOR;
+  else if (strcmp(tok, "value") == 0) sv = VAL;
+  else if (strcmp(tok, "jump")  == 0) sv = JMP;
+  else if (strcmp(tok, "jump0") == 0) sv = JMP0;
+  else if (strcmp(tok, "add")   == 0) sv = ADD;
+  else if (strcmp(tok, "sub")   == 0) sv = SUB;
+  else if (strcmp(tok, "halt")  == 0) sv = HALT;
+  else if (strcmp(tok, "nop")   == 0) sv = NOP;
+  else if (strcmp(tok, "data")  == 0) sv = DATA;
 
   /* Dennis Ritchie just turned in his grave */
   if      (tok == NULL) {
@@ -86,20 +88,22 @@ char     parse_line(char** string) {
     if (left    == 1) cmd |= 0x02;
     if (right   == 1) cmd |= 0x01;
   } 
-  else if (sv == JMP) {
+  else if (sv == JMP || sv == DATA) {
     int val;
 
     tok = strtok(NULL, " ,");
     if (tok == NULL) asm_error(CURRENT_LINE);
     sscanf(tok, "0x%X", &val);
 
-    cmd = 0x60 | val;
+    if (sv == JMP)  cmd = 0x60 | val;
+    if (sv == DATA) cmd = val;
   } 
-
   else if (sv == HALT) {
     cmd = 0xE0;
   } 
-
+  else if (sv == NOP) {
+    cmd = 0x00;
+  }
   else {
     asm_error(CURRENT_LINE);
   }

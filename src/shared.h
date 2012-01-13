@@ -21,6 +21,10 @@
 #define SUB        0x06
 #define HALT       0x07
 
+//Assembler special defs
+#define NOP        0x08
+#define DATA       0x09
+
 /* Parsing functions, should be macros */
 BYTE     get_inst(BYTE c);
 BYTE     get_reg (BYTE c);
