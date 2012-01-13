@@ -1,7 +1,7 @@
 #include "shared.c"
 #include "assembler.h"
 
-int CURRENT_LINE = 0;
+int CURRENT_LINE;
 
 char     parse_line(char** string) {
   char*  line; /* Raw text to process */
@@ -25,6 +25,7 @@ char     parse_line(char** string) {
   else if (strcmp(tok, "halt")  == 0) sv = HALT;
   else if (strcmp(tok, "nop")   == 0) sv = NOP;
   else if (strcmp(tok, "data")  == 0) sv = DATA;
+  else                                sv = -1;
 
   /* Dennis Ritchie just turned in his grave */
   if      (tok == NULL) {
@@ -104,9 +105,13 @@ char     parse_line(char** string) {
   else if (sv == NOP) {
     cmd = 0x00;
   }
-  else {
+  else if (sv == -1) {
     asm_error(CURRENT_LINE);
   }
+  
+  tok == NULL;
+  line == NULL;
+
   return cmd;
 }
 char*    fgetline(FILE* input, char term, int n) {
@@ -135,6 +140,8 @@ int main(int argc, char* argv[]) {
   char   *line;
   char  cmd;
   
+  CURRENT_LINE = 0;
+
   /* Open streams, *should* use UNIX flag style parsing */
   if (argc < 3) error("Too Few Arguments\nUsage: ./dvm source.asm outfile.o");
   input  = fopen(argv[1], "r");
@@ -157,9 +164,15 @@ int main(int argc, char* argv[]) {
     cmd = parse_line(&line);
     CURRENT_LINE++;
     fputc(cmd, output);
+    free(line);
   }
   
+  /* cleanup */
   fclose(output);
   fclose(input);
+
+  output = NULL;
+  input  = NULL;
+  line   = NULL;
   return 0;
 }
