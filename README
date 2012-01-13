@@ -1,0 +1,25 @@
+-=- About -=- 
+  dasm: A assembler for "Daves 4bit Language"
+  dvm:  A virtual machine for "Daves 4bit Language"
+
+  In no way is dvm complete or polished, the code needs to be cleaned, commented
+  made safe. Use at your own risk.
+
+-=- Compilation -=-
+  dasm/dvm are written in standard C for portability. Just modify "CC" in the 
+  Makefile to your desired C compiler and enjoy.
+
+-=- Folders -=-
+  src:      Program source
+  doc:      Documentation for "Daves 4bit language"
+  programs: A collection of sample programs
+
+-=- License -=-
+  - dvm and dasm are released under the GPL (see LICENSE for more info)
+  - "Daves 4bit Language" is not covered by this license, related files are
+      located in the doc folder
+
+
+-=- Authors -=-
+  David Bocking, "Daves 4bit Language"
+  Jeremy Bernhardt, dasm,dvm
