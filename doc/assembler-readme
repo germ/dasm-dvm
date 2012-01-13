@@ -1,0 +1,34 @@
+-=- Jargon -=-
+  Registers
+    r0, r1
+
+  Locations
+    0x0 through 0xF
+
+  Values
+    0x0 through 0xF
+
+-=- Keywords -=-
+  Instructions
+    load:     Load a register with a value from memory
+    store:    Store a value from a register to a memory location
+    value:    Load a register with a value 
+    jump:     Set the instruction pointer to value
+    jump0:    If the register is zero jump to location
+    add:      Add the second and third supplied registers together and store
+              in the first register
+    sub:      Subtract the third register from the second register and store
+              the value in the first register
+    halt:     Terminate the program
+    
+    , store, value, jump, jump0, add, sub, halt
+
+-=- Command syntax -=-
+  load    register, location
+  store   register, location
+  value   register, value
+  jump    location
+  jump0   register, location
+  add     register, register, register
+  sub     register, register, register
+  halt

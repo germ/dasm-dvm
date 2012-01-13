@@ -20,6 +20,6 @@ void     error(char* msg) {
   exit(1);
 }
 void     asm_error(int line) {
-  printf("Could not parse at line %d, Exiting", line);
+  printf("Could not parse at line %d, Exiting\n", line);
   exit(1);
 }

@@ -4,32 +4,17 @@
 int CURRENT_LINE = 0;
 
 char     parse_line(char** string) {
-  char*  line; /* Raw text to process */
-  char*  tok;  /* Current tokenized section */
-  char   cmd;  /* 8-bit command to be returned */
-  char   sv;   /* Switch Variable */
+  char*  line;
+  char*  tok;
+  char   cmd;
 
-  /* Init */
   cmd    = 0;
   line   = *string;
   tok    = strtok(line, " ,");
 
-  /* Find current instruction */
-  if (strcmp(tok, "load")  == 0) sv = LOAD;
-  if (strcmp(tok, "store") == 0) sv = STOR;
-  if (strcmp(tok, "value") == 0) sv = VAL;
-  if (strcmp(tok, "jump")  == 0) sv = JMP;
-  if (strcmp(tok, "jump0") == 0) sv = JMP0;
-  if (strcmp(tok, "add")   == 0) sv = ADD;
-  if (strcmp(tok, "sub")   == 0) sv = SUB;
-  if (strcmp(tok, "halt")  == 0) sv = HALT;
-
   /* Dennis Ritchie just turned in his grave */
-  if      (tok == NULL) {
-    asm_error(CURRENT_LINE);
-  }
-  else if (sv == LOAD || sv == STOR || sv == VAL || sv == JMP0) {
-    /*  Generic data parsing */
+  if      (tok == NULL) asm_error(CURRENT_LINE);
+  else if (strcmp(tok, "load")  == 0) {
     unsigned int reg, val;
 
     tok = strtok(NULL, " ,");
@@ -40,29 +25,61 @@ char     parse_line(char** string) {
     if (tok == NULL) asm_error(CURRENT_LINE);
     sscanf(tok, "0x%X", &val);
 
-    /* Specialized handling */
-    if      (sv == LOAD) {
-      cmd = 0x00 | val;
-      if (reg) 
-        cmd |= 0x10;
-    } 
-    else if (sv == STOR) {
-      cmd = 0x20 | val;
-      if (reg) 
-        cmd |= 0x10;
-    } 
-    else if (sv == VAL) {
-      cmd = 0x40 | val;
-      if (reg) 
-        cmd |= 0x10;
-    } 
-    else if (sv == JMP0) {
-      cmd = 0x80 | val;
-      if (reg) 
-        cmd |= 0x10;
-    }
+    cmd = 0x00 | val;
+    if (reg) cmd |= 0x10;
   }
-  else if (sv == ADD || sv == SUB) {
+  else if (strcmp(tok, "store") == 0) {
+    unsigned int reg, val;
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "r%d", &reg);
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "0x%X", &val);
+
+    cmd = 0x20 | val;
+    if (reg) cmd |= 0x10;
+  }
+  else if (strcmp(tok, "value") == 0) {
+    unsigned int reg, val;
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "r%d", &reg);
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "0x%X", &val);
+
+    cmd = 0x40 & val;
+    if (reg) cmd |= 0x10;
+  }
+  else if (strcmp(tok, "jump")  == 0) {
+    int val;
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "0x%X", &val);
+
+    cmd = 0x60 | val;
+  }
+  else if (strcmp(tok, "jump0") == 0) {
+    unsigned int reg, val;
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "r%d", &reg);
+
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "0x%X", &val);
+
+    cmd = 0x80 | val;
+    if (reg) cmd |= 0x10;
+  }
+  else if (strcmp(tok, "add")   == 0) {
     unsigned int storage, left, right;
 
     tok = strtok(NULL, " ,");
@@ -80,29 +97,39 @@ char     parse_line(char** string) {
     if (storage > 1 || left > 1 || right > 1)
       asm_error(CURRENT_LINE);
 
-    if (sv == ADD) cmd = 0xA0;
-    if (sv == SUB) cmd = 0xC0;
+    cmd = 0xA0;
     if (storage == 1) cmd |= 0x04;
     if (left    == 1) cmd |= 0x02;
     if (right   == 1) cmd |= 0x01;
-  } 
-  else if (sv == JMP) {
-    int val;
+  }
+  else if (strcmp(tok, "sub")   == 0) {
+    unsigned int storage, left, right;
 
     tok = strtok(NULL, " ,");
     if (tok == NULL) asm_error(CURRENT_LINE);
-    sscanf(tok, "0x%X", &val);
+    sscanf(tok, "r%d", &storage);
 
-    cmd = 0x60 | val;
-  } 
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "r%d", &left);
+    
+    tok = strtok(NULL, " ,");
+    if (tok == NULL) asm_error(CURRENT_LINE);
+    sscanf(tok, "r%d", &right);
 
-  else if (sv == HALT) {
+    if (storage > 1 || left > 1 || right > 1)
+      asm_error(CURRENT_LINE);
+
+    cmd = 0xC0;
+    if (storage == 1) cmd |= 0x04;
+    if (left    == 1) cmd |= 0x02;
+    if (right   == 1) cmd |= 0x01;
+  }
+  else if (strcmp(tok, "halt")  == 0) {
     cmd = 0xE0;
   } 
-
-  else {
-    asm_error(CURRENT_LINE);
-  }
+  else asm_error(CURRENT_LINE);
+  printf("%.2X\n", cmd);
   return cmd;
 }
 char*    fgetline(FILE* input, char term, int n) {
